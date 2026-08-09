@@ -56,12 +56,13 @@ bb plugin source session-goal
 
 ## What you get
 
-- **Tool** `goal` — `set` | `update` | `clear` | `list`
-- **Storage** — per-thread goal in the plugin SQLite DB
-- **UI** — collapsible composer banner; refreshes on realtime + reconnect
-- **Instructions** — thin dynamic blurb so the agent stays oriented to the why
-- **CLI** — `bb goal show`, `bb goal list-threads`
-- **Skill** — `skills/session-goal/SKILL.md` injected into agent threads
+- **Tool** `goal` — `set` | `update` | `complete` | `block` | `pause` | `resume` | criteria ticks | `clear` | `list`
+- **Storage** — per-thread goal in the plugin SQLite DB (status + checkable criteria)
+- **UI** — composer card: edit, dismiss, toggle checks, pause/resume, mark done
+- **Auto-continue** — optional wake on idle while the goal is still active
+- **Native sync** — mirrors harness goals (e.g. Codex) when the timeline exposes one
+- **CLI** — `bb goal show`, `bb goal sync`, `bb goal list-threads`
+- **Skill** — `skills/session-goal/SKILL.md`
 
 ### Tool example
 

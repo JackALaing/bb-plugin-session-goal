@@ -1,6 +1,6 @@
 ---
 name: session-goal
-description: Set and maintain a sticky session goal (why + success criteria) with the goal tool. Use when the user states an outcome/mission/definition of done, when multi-step work needs a clear why separate from todos, or to re-orient after drift.
+description: Set and maintain a sticky session goal (why + success criteria + status) with the goal tool. Use when the user states an outcome/mission/definition of done, when multi-step work needs a clear why separate from todos, or to re-orient after drift. Complete with evidence; do not soft-exit while active.
 ---
 
 # Session goal
@@ -20,7 +20,8 @@ Skip for one-shot trivia.
 ## Actions
 
 ```
-set | update | clear | list
+set | update | complete | block | pause | resume
+completeCriteria | uncompleteCriteria | clear | list
 ```
 
 Default when action is omitted: `list` (or `set` if `text` is present).
@@ -30,27 +31,45 @@ Default when action is omitted: `list` (or `set` if `text` is present).
 ```json
 {
   "action": "set",
-  "text": "Ship session-goal plugin tool + install",
+  "text": "Ship session-goal v0.2",
   "successCriteria": [
-    "goal tool supports set/update/clear/list",
-    "per-thread sqlite storage + getGoal RPC",
-    "composer banner + skill installed"
+    "status + complete with evidence works",
+    "auto-continue on idle when enabled",
+    "native harness goal syncs when present"
   ]
 }
 ```
 
-### Update
+### Tick criteria + complete
+
+```json
+{ "action": "completeCriteria", "completeCriteria": ["status + complete with evidence works"] }
+```
 
 ```json
 {
-  "action": "update",
-  "text": "Ship session-goal end-to-end",
-  "addCriteria": ["docs mention goal vs todo"]
+  "action": "complete",
+  "evidence": "selftest green; installed from path; auto-continue setting verified"
 }
 ```
 
-Or replace criteria wholesale with `successCriteria`, remove by exact text
-with `removeCriteria`.
+`complete` **requires** all criteria ticked (unless `force: true`) and
+`evidence` (unless `force: true`). If the todo plugin is installed and
+`requireTodosClear` is on, open todos also block complete unless `force`.
+
+### Block / pause / resume
+
+```json
+{ "action": "block", "blockedReason": "Need API credentials from user" }
+```
+
+```json
+{ "action": "pause" }
+```
+
+```json
+{ "action": "resume" }
+```
 
 ### Clear / list
 
@@ -62,6 +81,36 @@ with `removeCriteria`.
 { "action": "list" }
 ```
 
+## Status
+
+| Status | Meaning |
+| --- | --- |
+| `active` | Work remains; auto-continue may wake the agent |
+| `complete` | Objective proven; stop reopening unless user reframes |
+| `blocked` | True impasse — wait for user/external change |
+| `paused` | Soft stop; no auto-continue |
+
+## End-of-work contract
+
+Before yielding as **done**:
+
+1. Mark finished steps with **`todo`** (if used).
+2. Tick each success criterion as proven (`completeCriteria`).
+3. Call **`goal` `complete`** with **evidence** — or leave the goal **active**
+   and state what remains.
+
+**Never soft-exit** with an active goal and open criteria.
+
+If auto-continue is enabled, an active goal may start another turn after idle
+with a continuation prompt. That is expected — finish the work or pause/block.
+
+## Native harness goals
+
+When the provider exposes a native goal (e.g. Codex), this plugin **syncs**
+it into the card (`source: native`). Native harnesses often auto-continue
+themselves; the plugin skips double-continue in that case. `clear` /
+`complete` also try to clear the native goal banner.
+
 ## Goal vs todo
 
 | | **goal** | **todo** |
@@ -69,96 +118,19 @@ with `removeCriteria`.
 | What | Sticky **why** + optional success criteria | Ordered **steps** / checklist |
 | Count | One per thread | Many, nested, with deps |
 | Changes when | User reframes success or done-ness | Plan or execution progress changes |
-| UI | Compact goal card | Progress checklist |
-
-- **Goal text** — short outcome ("Ship billing fix without free-tier regressions").
-- **successCriteria** — observable checks that mean "done" (tests green, docs
-  updated, install verified). Not a work breakdown.
-- **Todos** — how you get there (implement, review, install, report).
-
-When both plugins are installed, set the goal first on non-trivial work, then
-break work into todos that move criteria toward done.
+| Finish | `complete` + evidence | mark items completed |
 
 ## Anti-patterns
 
-- **Todo-as-goal** — dumping steps into `successCriteria` ("edit server.ts",
-  "run tests"). Criteria should be outcomes you can verify, not a task list.
-- **Goal-as-todo** — putting the mission only in a top-level todo and never
-  setting `goal`. The checklist can complete while the why is forgotten.
-- **Duplicate mirror** — copying every todo item into criteria (or the reverse).
-  One source of truth each: criteria = done-ness; todos = path.
-- **Silent drift** — user changes the mission but you only add todos. Call
-  `goal` `update` (or `set`) so the card matches the new why.
-- **Criterion spam** — long, vague, or untestable lists. Prefer a few concrete
-  checks (max is a hard cap; fewer is better).
-
-## Multi-agent example
-
-Parent owns both the goal and the plan. Children execute steps and `report`;
-they should not redefine the thread goal unless the user reframes success.
-
-```json
-// 1) Why (session-goal)
-{
-  "action": "set",
-  "text": "Ship notify plugin with toast + optional webhook",
-  "successCriteria": [
-    "notify tool delivers toast and webhook channels",
-    "quiet hours suppress non-error pings",
-    "skill + install documented"
-  ]
-}
-```
-
-```json
-// 2) Steps (todo) — path toward that why
-{
-  "action": "set",
-  "items": [
-    {
-      "id": "notify",
-      "content": "Ship notify",
-      "children": [
-        {
-          "id": "notify.channels",
-          "content": "Toast + webhook channels",
-          "assignee": "worker"
-        },
-        {
-          "id": "notify.quiet",
-          "content": "Quiet hours settings",
-          "dependsOn": ["notify.channels"],
-          "assignee": "worker"
-        },
-        {
-          "id": "notify.review",
-          "content": "Review UX + skill copy",
-          "dependsOn": ["notify.quiet"],
-          "assignee": "reviewer"
-        }
-      ]
-    }
-  ]
-}
-```
-
-```json
-// 3) Dispatch workers; they report when done
-{ "action": "dispatch-ready" }
-```
-
-```json
-// Child thread only:
-{ "action": "report", "status": "completed", "summary": "Webhook + toast wired" }
-```
-
-If mid-flight the user says "drop webhook, toast only," update the **goal**
-(and criteria) first, then cancel or replan **todos** — don't only edit the
-checklist.
+- Steps in `successCriteria` ("edit server.ts") — put those in **todo**.
+- Soft-exit: saying "done" without `goal complete` while status is active.
+- Completing with `force` instead of ticking criteria / finishing todos.
+- Blocking on the first difficulty — only `block` on true repeated impasse.
+- Criterion spam — prefer a few concrete checks.
 
 ## Rules
 
 1. Prefer a concrete goal early on non-trivial sessions.
 2. Keep criteria observable; keep todos actionable.
-3. Don't paste the goal card back to the user every turn — the UI shows it.
-4. Clear the goal when the session's why is gone, not when one todo finishes.
+3. Don't paste the goal card back every turn — the UI shows it.
+4. Clear only when abandoning; complete when proven; pause when parking.

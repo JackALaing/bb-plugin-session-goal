@@ -1,8 +1,8 @@
 {
   "name": "bb-plugin-session-goal",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
-  "description": "Sticky session goal card for BB agents — why + success criteria, live composer banner.",
+  "description": "Sticky session goal for BB — status, checkable criteria, user dismiss/edit, auto-continue, native harness sync.",
   "license": "MIT",
   "author": "agustif",
   "repository": {
