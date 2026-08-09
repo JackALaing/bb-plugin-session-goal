@@ -2,7 +2,9 @@
 
 Sticky **session goal** for [BB](https://github.com/get-bb/bb) threads: a short **why** plus optional success criteria.
 
-Agents set it with the `goal` tool; the UI shows a compact composer banner. Pair with **bb-plugin-todo** (if installed) for ordered **steps**.
+Agents set it with the `goal` tool; the UI shows a compact composer banner. Pair with
+**[bb-plugin-todo](https://github.com/agustif/bb-plugin-todo)** for ordered **steps**
+and **[bb-plugin-notify](https://github.com/agustif/bb-plugin-notify)** for completion pings.
 
 | | **goal** (this plugin) | **todo** |
 |---|---|---|
