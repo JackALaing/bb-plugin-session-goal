@@ -15,7 +15,7 @@
   "homepage": "https://github.com/agustif/bb-plugin-session-goal#readme",
   "engines": {
     "bb": ">=0.36",
-    "bbPluginSdk": "^0.4.1",
+    "bbPluginSdk": ">=0.4.16",
     "node": ">=22"
   },
   "bb": {
@@ -57,7 +57,7 @@
     "build": "bb plugin build",
     "dev": "bb plugin dev",
     "types": "bb plugin types",
-    "test": "node --experimental-strip-types src/tool.selftest.mjs",
+    "test": "node --experimental-strip-types --import ./scripts/register-ts.mjs src/tool.selftest.mjs && node --experimental-strip-types --import ./scripts/register-ts.mjs src/plugin.selftest.mjs",
     "prepublishOnly": "bb plugin build && npm test"
   },
   "dependencies": {
@@ -70,11 +70,13 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@get-bb/plugin-sdk": "0.6.79",
     "@radix-ui/react-dialog": "^1.1.19",
     "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "better-sqlite3": "^12.0.0",
+    "cron-parser": "^5.10.2",
     "hono": "^4.11.9",
     "typescript": "^5.7.0",
     "vaul": "^1.1.2"

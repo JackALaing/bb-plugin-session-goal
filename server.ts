@@ -1,4 +1,4 @@
-import { type BbPluginApi } from "@bb/plugin-sdk";
+import { type BbPluginApi } from "@get-bb/plugin-sdk";
 import {
   DEFAULT_AUTO_CONTINUE,
   DEFAULT_COOLDOWN_MS,
@@ -257,9 +257,11 @@ export default async function plugin(bb: BbPluginApi) {
     name: TOOL_NAME,
     description: TOOL_DESCRIPTION,
     instructions: TOOL_INSTRUCTIONS,
-    experimental_statusLabels: {
-      pending: "Updating goal",
-      completed: "Updated goal",
+    presentation: {
+      label: {
+        pending: "Updating goal",
+        completed: "Updated goal",
+      },
     },
     parameters: goalToolInputSchema,
     async execute(input, ctx) {

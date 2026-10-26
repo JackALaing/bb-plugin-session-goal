@@ -8,11 +8,11 @@ import {
 } from "react";
 import {
   definePluginApp,
-  useComposerView,
+  useComposer,
   useRealtime,
   useRealtimeConnectionState,
   useRpc,
-} from "@bb/plugin-sdk/app";
+} from "@get-bb/plugin-sdk/app";
 import type { rpcContract } from "./src/rpc";
 import { REALTIME_CHANNEL } from "./src/constants";
 import "./app.css";
@@ -305,6 +305,7 @@ function GoalBannerForThread({ threadId }: { threadId: string }) {
 
   const goal = snapshot?.goal ?? null;
   if (!goal) return null;
+  const goalText = goal.text;
 
   const criteria = goal.successCriteria;
   const criteriaCount = criteria.length;
@@ -317,7 +318,7 @@ function GoalBannerForThread({ threadId }: { threadId: string }) {
   }
 
   function startEdit() {
-    setDraftText(goal.text);
+    setDraftText(goalText);
     setEditing(true);
     setExpanded(true);
   }
@@ -330,7 +331,7 @@ function GoalBannerForThread({ threadId }: { threadId: string }) {
   async function saveEdit(event?: FormEvent) {
     event?.preventDefault();
     const text = draftText.trim();
-    if (!text || text === goal.text) {
+    if (!text || text === goalText) {
       cancelEdit();
       return;
     }
@@ -599,7 +600,7 @@ function GoalBannerForThread({ threadId }: { threadId: string }) {
 }
 
 function GoalBanner() {
-  const composerView = useComposerView();
+  const composerView = useComposer();
   if (composerView.scope.kind !== "thread") return null;
   return (
     <GoalBannerForThread

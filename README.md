@@ -15,7 +15,7 @@ and **[bb-plugin-notify](https://github.com/agustif/bb-plugin-notify)** for comp
 
 ## Install
 
-Requires **BB ≥ 0.36** and plugin SDK **^0.4.1**.
+Requires **BB ≥ 0.36** and plugin SDK **≥ 0.4.16**.
 
 ### From Git (recommended)
 
@@ -112,7 +112,7 @@ See [`skills/session-goal/SKILL.md`](./skills/session-goal/SKILL.md) for full to
 ```sh
 npm install
 npm test
-bb plugin types          # refresh vendored SDK .d.ts from your running bb
+bb plugin types          # repin @get-bb/plugin-sdk to your running bb
 bb plugin build          # emit dist/ for managed installs
 bb plugin install . --yes
 bb plugin dev            # watch → rebuild app + reload
@@ -125,7 +125,6 @@ server.ts          # factory: tool, rpc, CLI, instructions
 app.tsx / app.css  # composer banner
 src/               # pure model, store, tool, schemas
 skills/            # agent skill
-types/             # vendored @bb/plugin-sdk declarations
 dist/              # build output (not committed; npm ships it)
 ```
 

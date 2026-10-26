@@ -1,4 +1,4 @@
-import type { PluginAgentToolResult } from "@bb/plugin-sdk";
+import type { PluginAgentToolResult } from "@get-bb/plugin-sdk";
 import { formatGoalMarkdown } from "./format.js";
 import {
   allCriteriaDone,

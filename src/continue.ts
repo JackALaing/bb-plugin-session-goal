@@ -1,4 +1,4 @@
-import type { BbPluginApi } from "@bb/plugin-sdk";
+import type { BbPluginApi } from "@get-bb/plugin-sdk";
 import {
   DEFAULT_AUTO_CONTINUE,
   DEFAULT_COOLDOWN_MS,
@@ -87,6 +87,7 @@ export async function maybeAutoContinue(
         {
           type: "text",
           text: prompt,
+          mentions: [],
         },
       ],
     });
